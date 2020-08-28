@@ -31,9 +31,9 @@ function App() {
     })
     socket.on('user-left', data => {
       if(userID === data.uid){
+        console.log(data)
         video.remove();
       }
-      console.log(data)
     })
   }
 
