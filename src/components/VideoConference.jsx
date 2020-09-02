@@ -11,11 +11,11 @@ const VideoConference = ({ match }) => {
   const myVideo = useRef();
 
   const [mediaSettings] = useState({
-    // video: true,
-    video: {
-      width: 300,
-      height: 542,
-    },
+     video: true,
+    //video: {
+      //width: 300,
+      //height: 542,
+    //},
     audio: true,
   });
 
