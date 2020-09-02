@@ -1,0 +1,45 @@
+#conf-controls {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+
+#conf-controls::before {
+  content: "";
+  z-index: -1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.6699054621848739) 100%);
+  opacity: 0.5;
+}
+
+#conf-controls #conf-controls-inner {
+  padding: 0.5rem;
+  margin: auto;
+  width: 70%;
+  height: auto;
+  display: flex;
+  justify-content: space-around;
+  align-items: space-between;
+}
+
+#conf-controls #conf-controls-inner > div {
+  display: inline-block;
+  line-height: 1;
+  padding: 25px;
+  height: auto;
+  width: auto;
+}
+
+#conf-controls #conf-controls-inner > div > svg {
+  transform: scale(2);
+}
+
+#conf-controls #conf-controls-inner > div#end-call {
+  background: red;
+  border-radius: 50%;
+}

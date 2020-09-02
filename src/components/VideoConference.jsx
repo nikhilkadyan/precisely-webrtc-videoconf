@@ -1,25 +1,27 @@
 import React, { useEffect, useRef, useState } from "react";
 import Peer from "peerjs";
 import socketIOClient from "socket.io-client";
+import ConferenceControls from "./ConferenceControls";
 import "./assets/css/style.css";
+
 const ENDPOINT = "https://precisely-learnage.herokuapp.com/";
+let stream;
 
 const VideoConference = ({ match }) => {
   const myVideo = useRef();
 
   const [mediaSettings] = useState({
-    video: true,
-    // video: {
-    //   width: 300,
-    //   height: 542,
-    // },
+    // video: true,
+    video: {
+      width: 300,
+      height: 542,
+    },
     audio: true,
   });
 
   const socket = socketIOClient(ENDPOINT);
   const myPeer = new Peer();
   const room_id = match.params.conId;
-  console.log(match.params)
 
   const addVideoStream = (video, stream) => {
     video.srcObject = stream;
@@ -47,35 +49,36 @@ const VideoConference = ({ match }) => {
     });
   };
 
-  useEffect(() => {
-    const init = async () => {
-      myVideo.current.muted = true;
-      myPeer.on("open", (id) => {
-        localStorage.setItem("user_uid", id);
-        socket.emit("join-room", { roomID: room_id, uid: id });
-      });
-      // Handle Streams
-      const stream = await navigator.mediaDevices.getUserMedia(mediaSettings);
-      myVideo.current.srcObject = stream;
-
-      // Handle when connecting to other users
-      myPeer.on("call", (call) => {
-        call.answer(stream);
-        console.log(stream);
-        const video = document.createElement("video");
-        call.on("stream", (userVideoStream) => {
-          addVideoStream(video, userVideoStream);
-        });
-      });
-
-      // Handle when new user joins
-      socket.on("user-joined", (data) => {
-        connectNewUser(data.uid, stream);
-      });
-    }
-    init();
+  useEffect(async () => {
+    myVideo.current.muted = true;
+    myPeer.on("open", (id) => {
+      localStorage.setItem("user_uid", id);
+      socket.emit("join-room", { roomID: room_id, uid: id });
+    });
+    // Handle Streams
+    stream = await navigator.mediaDevices.getUserMedia(mediaSettings);
+    myVideo.current.srcObject = stream;
     // eslint-disable-next-line
-  }, [myPeer, socket]);
+  }, []);
+
+  // Handle when connecting to other users
+  myPeer.on("call", (call) => {
+    call.answer(stream);
+    console.log(stream);
+    const video = document.createElement("video");
+    call.on("stream", (userVideoStream) => {
+      addVideoStream(video, userVideoStream);
+    });
+  });
+
+  // Handle when new user joins
+  socket.on("user-joined", (data) => {
+    if (data.uid === localStorage.getItem("user_uid")) {
+      console.log("my id");
+    } else {
+      connectNewUser(data.uid, stream);
+    }
+  });
 
   window.addEventListener("beforeunload", (ev) => {
     ev.preventDefault();
@@ -92,21 +95,13 @@ const VideoConference = ({ match }) => {
   };
 
   return (
-    <div id="vid-conf">
-      <div id="conference-creator">
-        <video id="myVideo" ref={myVideo} onLoadedMetadata={playVideo} />
+    <div id="vid-conf-parent">
+      <div id="vid-conf">
+        <div id="conference-creator">
+          <video id="myVideo" ref={myVideo} onLoadedMetadata={playVideo} />
+        </div>
       </div>
-      {/* <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div> */}
+      <ConferenceControls />
     </div>
   );
 };
