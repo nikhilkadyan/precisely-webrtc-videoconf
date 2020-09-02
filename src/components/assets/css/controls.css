@@ -36,7 +36,7 @@
 }
 
 #conf-controls #conf-controls-inner > div > svg {
-  transform: scale(2);
+  transform: scale(1.6);
 }
 
 #conf-controls #conf-controls-inner > div#end-call {
