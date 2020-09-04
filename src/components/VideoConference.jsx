@@ -87,11 +87,11 @@ const VideoConference = ({ match }) => {
 
   // Handle when new user joins
   socket.on("user-joined", (data) => {
-    // if (data.uid === localStorage.getItem("user_uid")) {
-    //   console.log("my id");
-    // } else {
+    if (data.uid === localStorage.getItem("user_uid")) {
+      console.log("my id");
+    } else {
     connectNewUser(data.uid, stream);
-    // }
+    }
   });
 
   window.addEventListener("beforeunload", (ev) => {
