@@ -11,18 +11,20 @@ video {
     background-attachment: fixed;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-auto-rows: 200px;
+    grid-auto-rows: 180px;
     padding: 0.8rem;
     grid-gap: 0.8rem;
 }
 
-#vid-conf > div {
-    background-color: red;
+#vid-conf>div {
+    border: 2px solid #878787;
+    background-color: #222222;
     border-radius: 12px;
 }
 
 #vid-conf #conference-creator {
-    background: green;
+    background: #222222;
+    border: 2px solid #878787;
     grid-column: 1 / span 2;
     grid-row: 1 / span 2;
 }

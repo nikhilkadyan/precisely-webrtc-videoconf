@@ -11,13 +11,26 @@ const VideoConference = ({ match }) => {
   const myVideo = useRef();
 
   const [mediaSettings] = useState({
-     video: true,
-    //video: {
-      //width: 300,
-      //height: 542,
-    //},
+    // video: true,
+    video: {
+      width: 300,
+      height: 542,
+    },
     audio: true,
   });
+
+  const muteAudio = () => {
+    console.log("Audio Muted");
+    stream.getAudioTracks()[0].enabled
+      ? (stream.getAudioTracks()[0].enabled = false)
+      : (stream.getAudioTracks()[0].enabled = true);
+  };
+  const endConference = () => {
+    leaveConference();
+  };
+  const shareLink = () => {
+    console.log("Share");
+  };
 
   const socket = socketIOClient(ENDPOINT);
   const myPeer = new Peer();
@@ -25,10 +38,12 @@ const VideoConference = ({ match }) => {
 
   const addVideoStream = (video, stream) => {
     video.srcObject = stream;
+    const div = document.createElement("div");
+    div.appendChild(video);
     video.addEventListener("loadedmetadata", () => {
       video.play();
     });
-    document.getElementById("vid-conf").append(video);
+    document.getElementById("vid-conf").append(div);
   };
 
   // Connect to new user
@@ -64,7 +79,6 @@ const VideoConference = ({ match }) => {
   // Handle when connecting to other users
   myPeer.on("call", (call) => {
     call.answer(stream);
-    console.log(stream);
     const video = document.createElement("video");
     call.on("stream", (userVideoStream) => {
       addVideoStream(video, userVideoStream);
@@ -73,22 +87,26 @@ const VideoConference = ({ match }) => {
 
   // Handle when new user joins
   socket.on("user-joined", (data) => {
-    if (data.uid === localStorage.getItem("user_uid")) {
-      console.log("my id");
-    } else {
-      connectNewUser(data.uid, stream);
-    }
+    // if (data.uid === localStorage.getItem("user_uid")) {
+    //   console.log("my id");
+    // } else {
+    connectNewUser(data.uid, stream);
+    // }
   });
 
   window.addEventListener("beforeunload", (ev) => {
     ev.preventDefault();
+    leaveConference();
+
+    return (ev.returnValue = "Are you sure you want to close?");
+  });
+
+  const leaveConference = () => {
     socket.emit("leave-room", {
       roomID: room_id,
       uid: localStorage.getItem("user_uid"),
     });
-
-    return (ev.returnValue = "Are you sure you want to close?");
-  });
+  };
 
   const playVideo = () => {
     myVideo.current.play();
@@ -101,7 +119,11 @@ const VideoConference = ({ match }) => {
           <video id="myVideo" ref={myVideo} onLoadedMetadata={playVideo} />
         </div>
       </div>
-      <ConferenceControls />
+      <ConferenceControls
+        muteAudio={muteAudio}
+        endConference={endConference}
+        shareLink={shareLink}
+      />
     </div>
   );
 };

@@ -1,11 +1,11 @@
 import React from "react";
 import "./assets/css/controls.css";
 
-const ConferenceControls = () => {
+const ConferenceControls = ({ muteAudio, endConference, shareLink }) => {
   return (
     <div id="conf-controls">
       <div id="conf-controls-inner">
-        <div>
+        <div onClick={muteAudio}>
           <svg
             width="18"
             height="18"
@@ -19,7 +19,7 @@ const ConferenceControls = () => {
             />
           </svg>
         </div>
-        <div id="end-call">
+        <div id="end-call" onClick={endConference}>
           <svg
             width="21"
             height="21"
@@ -33,7 +33,7 @@ const ConferenceControls = () => {
             />
           </svg>
         </div>
-        <div>
+        <div onClick={shareLink}>
           <svg
             width="18"
             height="15"
